@@ -1,0 +1,36 @@
+[project]
+name = "threader-python"
+version = "0.1.0"
+description = "Python SDK for Threader — football video annotation data access and bridge"
+readme = "README.md"
+license = "MIT"
+authors = [
+    { name = "Xingnan Zhu", email = "Dreaner2016@outlook.com" }
+]
+requires-python = ">=3.10"
+dependencies = [
+    "pandas>=2.0",
+]
+
+[project.optional-dependencies]
+viz = ["plotly", "matplotlib", "mplsoccer"]
+
+[dependency-groups]
+dev = ["pytest>=8.0", "ruff>=0.4", "ipython>=8.0"]
+
+[build-system]
+requires = ["uv_build>=0.10.2,<0.11.0"]
+build-backend = "uv_build"
+
+[tool.ruff]
+target-version = "py310"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/conftest.py" = ["E501"]  # SQL strings in test fixtures
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
