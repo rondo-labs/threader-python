@@ -21,7 +21,18 @@ import os as _os
 
 from threader_python.bridge import play, playlist, select
 from threader_python.connection import connect, disconnect, is_connected
-from threader_python.data import clips, events, match, players, teams, videos, whistle_sync
+from threader_python.data import (
+    clips,
+    events,
+    import_sessions,
+    imported_events,
+    match,
+    players,
+    teams,
+    videos,
+    whistle_sync,
+)
+from threader_python.interactive import interactive
 
 __all__ = [
     # Connection
@@ -30,6 +41,8 @@ __all__ = [
     "is_connected",
     # Data access
     "events",
+    "imported_events",
+    "import_sessions",
     "players",
     "teams",
     "clips",
@@ -40,6 +53,8 @@ __all__ = [
     "select",
     "play",
     "playlist",
+    # Interactive charts
+    "interactive",
 ]
 
 # Auto-connect when running inside a Threader embedded notebook.

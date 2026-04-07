@@ -36,6 +36,52 @@ EVENTS_COLUMNS = [
     "updated_at",
 ]
 
+# -- Imported Events (external data: StatsBomb, Opta, etc.) -------------------
+
+IMPORTED_EVENTS_TABLE = "imported_events"
+IMPORTED_EVENTS_COLUMNS = [
+    "id",
+    "import_session_id",
+    "video_id",
+    "provider_event_id",
+    "video_time_ms",
+    "period",
+    "match_clock",
+    "type",
+    "sub_type",
+    "provider_type",
+    "provider_sub_type",
+    "is_successful",
+    "outcome_type",
+    "player_id",
+    "player_name",
+    "team_id",
+    "team_name",
+    "x",
+    "y",
+    "x_end",
+    "y_end",
+    "body_part",
+    "raw_data",
+    "created_at",
+    "resolved_player_id",
+]
+
+# -- Import Sessions ----------------------------------------------------------
+
+IMPORT_SESSIONS_TABLE = "import_sessions"
+IMPORT_SESSIONS_COLUMNS = [
+    "id",
+    "video_id",
+    "provider",
+    "file_name",
+    "event_count",
+    "frame_count",
+    "visible",
+    "color",
+    "created_at",
+]
+
 # -- Players ------------------------------------------------------------------
 
 PLAYERS_TABLE = "players"

@@ -5,7 +5,17 @@ from __future__ import annotations
 from pathlib import Path
 
 from threader_python.connection import connect, disconnect
-from threader_python.data import clips, events, match, players, teams, videos, whistle_sync
+from threader_python.data import (
+    clips,
+    events,
+    import_sessions,
+    imported_events,
+    match,
+    players,
+    teams,
+    videos,
+    whistle_sync,
+)
 
 
 class TestDataAccess:
@@ -158,3 +168,51 @@ class TestDataAccess:
 
         df_none = whistle_sync(video_id="nonexistent")
         assert len(df_none) == 0
+
+    # -- imported_events() ----------------------------------------------------
+
+    def test_imported_events_all(self, threader_db: Path) -> None:
+        self._connect(threader_db)
+        df = imported_events()
+        assert len(df) == 3
+        assert "player_name" in df.columns
+        assert "team_name" in df.columns
+        assert "provider_type" in df.columns
+
+    def test_imported_events_filter_type(self, threader_db: Path) -> None:
+        self._connect(threader_db)
+        df = imported_events(type="pass")
+        assert len(df) == 2
+
+    def test_imported_events_filter_player(self, threader_db: Path) -> None:
+        self._connect(threader_db)
+        df = imported_events(player_id="p1")
+        assert len(df) == 2
+
+    def test_imported_events_filter_session(self, threader_db: Path) -> None:
+        self._connect(threader_db)
+        df = imported_events(session_id="is1")
+        assert len(df) == 3
+
+        df_none = imported_events(session_id="nonexistent")
+        assert len(df_none) == 0
+
+    def test_imported_events_boolean_conversion(self, threader_db: Path) -> None:
+        self._connect(threader_db)
+        df = imported_events()
+        assert df.iloc[0]["is_successful"] == True  # noqa: E712
+
+    def test_imported_events_has_inline_names(self, threader_db: Path) -> None:
+        self._connect(threader_db)
+        df = imported_events(player_id="p1")
+        assert df.iloc[0]["player_name"] == "Lionel Messi"
+        assert df.iloc[0]["team_name"] == "FC Barcelona"
+
+    # -- import_sessions() ----------------------------------------------------
+
+    def test_import_sessions(self, threader_db: Path) -> None:
+        self._connect(threader_db)
+        df = import_sessions()
+        assert len(df) == 1
+        assert df.iloc[0]["provider"] == "statsbomb"
+        assert df.iloc[0]["event_count"] == 3

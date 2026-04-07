@@ -16,7 +16,12 @@ dependencies = [
 viz = ["plotly", "matplotlib", "mplsoccer"]
 
 [dependency-groups]
-dev = ["pytest>=8.0", "ruff>=0.4", "ipython>=8.0"]
+dev = [
+    "pytest>=8.0",
+    "ruff>=0.4",
+    "ipython>=8.0",
+    "plotly>=6.6.0",
+]
 
 [build-system]
 requires = ["uv_build>=0.10.2,<0.11.0"]

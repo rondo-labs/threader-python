@@ -165,6 +165,47 @@ def _run_migrations(db: sqlite3.Connection) -> None:
             sort_order  INTEGER NOT NULL DEFAULT 0,
             PRIMARY KEY (playlist_id, clip_id)
         );
+
+        -- Migration 008: Import sessions + imported events
+        CREATE TABLE IF NOT EXISTS import_sessions (
+            id          TEXT PRIMARY KEY,
+            video_id    TEXT NOT NULL REFERENCES videos(id),
+            provider    TEXT NOT NULL,
+            file_name   TEXT NOT NULL,
+            event_count INTEGER NOT NULL DEFAULT 0,
+            frame_count INTEGER NOT NULL DEFAULT 0,
+            visible     INTEGER NOT NULL DEFAULT 1,
+            color       TEXT NOT NULL DEFAULT '#58A6FF',
+            created_at  TEXT NOT NULL DEFAULT (datetime('now'))
+        );
+
+        CREATE TABLE IF NOT EXISTS imported_events (
+            id                  TEXT PRIMARY KEY,
+            import_session_id   TEXT NOT NULL REFERENCES import_sessions(id) ON DELETE CASCADE,
+            video_id            TEXT NOT NULL REFERENCES videos(id) ON DELETE CASCADE,
+            provider_event_id   TEXT,
+            video_time_ms       INTEGER NOT NULL,
+            period              TEXT,
+            match_clock         TEXT,
+            type                TEXT NOT NULL,
+            sub_type            TEXT,
+            provider_type       TEXT NOT NULL,
+            provider_sub_type   TEXT,
+            is_successful       INTEGER NOT NULL DEFAULT 1,
+            outcome_type        TEXT NOT NULL DEFAULT '',
+            player_id           TEXT NOT NULL DEFAULT '',
+            player_name         TEXT,
+            team_id             TEXT NOT NULL DEFAULT '',
+            team_name           TEXT,
+            x                   REAL NOT NULL DEFAULT 0,
+            y                   REAL NOT NULL DEFAULT 0,
+            x_end               REAL NOT NULL DEFAULT 0,
+            y_end               REAL NOT NULL DEFAULT 0,
+            body_part           TEXT NOT NULL DEFAULT 'right_foot',
+            raw_data            TEXT,
+            created_at          TEXT NOT NULL DEFAULT (datetime('now')),
+            resolved_player_id  TEXT
+        );
     """)
 
 
@@ -203,6 +244,14 @@ def _seed_data(db: sqlite3.Connection) -> None:
         INSERT INTO whistle_sync (id, video_id, period, sub_type, video_time_ms, sort_order)
         VALUES ('w1', 'v1', '1H', 'start', 0, 0),
                ('w2', 'v1', '1H', 'end', 2700000, 1);
+
+        INSERT INTO import_sessions (id, video_id, provider, file_name, event_count)
+        VALUES ('is1', 'v1', 'statsbomb', 'match_events.csv', 3);
+
+        INSERT INTO imported_events (id, import_session_id, video_id, video_time_ms, period, match_clock, type, sub_type, provider_type, provider_sub_type, is_successful, outcome_type, player_id, player_name, team_id, team_name, x, y, x_end, y_end, body_part)
+        VALUES ('ie1', 'is1', 'v1', 12000, '1H', '00:12', 'pass', 'open_play', 'Pass', 'Open Play', 1, 'complete', 'p1', 'Lionel Messi', 't1', 'FC Barcelona', 30.0, 10.0, 40.0, -20.0, 'right_foot'),
+               ('ie2', 'is1', 'v1', 28000, '1H', '00:28', 'pass', 'open_play', 'Pass', 'Open Play', 1, 'complete', 'p2', 'Jordi Alba', 't1', 'FC Barcelona', 40.0, -20.0, 35.0, 5.0, 'left_foot'),
+               ('ie3', 'is1', 'v1', 55000, '1H', '00:55', 'shot', 'open_play', 'Shot', 'Open Play', 0, 'saved', 'p1', 'Lionel Messi', 't1', 'FC Barcelona', 45.0, 2.0, 52.5, 0.0, 'left_foot');
     """)
 
 

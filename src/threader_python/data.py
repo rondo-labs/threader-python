@@ -15,6 +15,10 @@ from threader_python.schema import (
     CLIPS_TABLE,
     EVENTS_COLUMNS,
     EVENTS_TABLE,
+    IMPORT_SESSIONS_COLUMNS,
+    IMPORT_SESSIONS_TABLE,
+    IMPORTED_EVENTS_COLUMNS,
+    IMPORTED_EVENTS_TABLE,
     MATCHES_COLUMNS,
     MATCHES_TABLE,
     PLAYERS_COLUMNS,
@@ -194,3 +198,55 @@ def whistle_sync(*, video_id: str | None = None) -> pd.DataFrame:
         DataFrame with one row per whistle event, ordered by sort_order.
     """
     return _query(WHISTLE_SYNC_TABLE, WHISTLE_SYNC_COLUMNS, filters={"video_id": video_id})
+
+
+def imported_events(
+    *,
+    type: str | None = None,
+    sub_type: str | None = None,
+    player_id: str | None = None,
+    team_id: str | None = None,
+    period: str | None = None,
+    is_successful: bool | None = None,
+    session_id: str | None = None,
+) -> pd.DataFrame:
+    """Query externally imported events (StatsBomb, Opta, etc.).
+
+    These are events imported from third-party data providers, as opposed
+    to manually annotated events from ``events()``. Imported events include
+    inline ``player_name`` and ``team_name`` columns.
+
+    Args:
+        type: Filter by CDF event type (e.g. ``"pass"``, ``"shot"``).
+        sub_type: Filter by CDF event sub-type.
+        player_id: Filter by player ID.
+        team_id: Filter by team ID.
+        period: Filter by match period (e.g. ``"1H"``, ``"2H"``).
+        is_successful: Filter by success flag.
+        session_id: Filter by import session ID.
+
+    Returns:
+        DataFrame with one row per imported event.
+    """
+    return _query(
+        IMPORTED_EVENTS_TABLE,
+        IMPORTED_EVENTS_COLUMNS,
+        filters={
+            "type": type,
+            "sub_type": sub_type,
+            "player_id": player_id,
+            "team_id": team_id,
+            "period": period,
+            "is_successful": is_successful,
+            "import_session_id": session_id,
+        },
+    )
+
+
+def import_sessions() -> pd.DataFrame:
+    """Query import sessions (one per imported data file).
+
+    Returns:
+        DataFrame with one row per import session.
+    """
+    return _query(IMPORT_SESSIONS_TABLE, IMPORT_SESSIONS_COLUMNS)
